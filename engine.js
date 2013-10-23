@@ -1,5 +1,16 @@
 var global_geometry = undefined;
 
+function sleep(milliseconds) {
+	var start = new Date().getTime();
+	for (var i = 0; i < 1e7; i++) {
+		if ((new Date().getTime() - start) > milliseconds) break;
+	}
+};
+
+function sleep2(milliseconds) {
+	var start = new Date().getTime();
+	while (new Date().getTime() < start + milliseconds);
+};
 
 function Engine() {};
 
@@ -89,25 +100,19 @@ SceneManager.prototype = {
 		this.entities.push(cube);
 		
 		var cube3 = new Cube();
-		cube3.init(0.5, 0.5, 0.5, 0xAB12CD, 1)
+		cube3.init(0.5, 0.5, 0.5, 0xAB12CD, 1);
 		cube3.set_position(-1,1,3);
 		cube3.add(this.scene, this.world);
+		this.entities.push(cube3);
 		this.movableEntities.push(cube3);
-		
-/*		
-		var loader = new THREE.JSONLoader();
-		var setgeometry = function (geometry) {
-			global_geometry = geometry;
-			}
-		
-		loader.load('sikmina.js', setgeometry);
-		var plocha = new Entity();
-		plocha.geometry = global_geometry;
-		plocha.material = new THREE.MeshLambertMaterial({color: 0x0000EF});
-		plocha.mesh = new THREE.Mesh(plocha.geometry, plocha.material);
-		this.scene.add(plocha.mesh);
-*/		
-		
+	
+		var sikma = new Rampa();
+		sikma.init(0xAB1212, 0);
+		sikma.mesh.position.set(0,1,0);
+		sikma.mesh.rotation.y = -Math.PI/2;
+		sikma.add(this.scene, this.world);
+		this.entities.push(sikma);
+	
 		
 		//light
 		var light = new THREE.PointLight(0xF8D898);
@@ -120,7 +125,17 @@ SceneManager.prototype = {
 	},
 };
 
-function Entity() {};
+function Entity(file) {
+	if (file == undefined) return;
+		
+	var loader = new THREE.JSONLoader();
+	loader.load(file, function(geometry) {	
+			global_geometry = geometry;
+		});
+				
+	while(global_geometry == undefined) { sleep2(1000); }
+	this.geometry = global_geometry;
+};
 
 Entity.prototype = {
 	//graphics
@@ -132,14 +147,22 @@ Entity.prototype = {
 	body : undefined,
 	
 	init : function() {},
+	
 	add : function(scene, world) {
-		scene.add(this.mesh);
-		world.add(this.body);
+		if (this.mesh != undefined)
+			scene.add(this.mesh);
+		if (this.body != undefined)
+			world.add(this.body);
 	},
+	
 	move : function() {}, //function for moving objects
+	
 	animate: function() {}, //function for animated objects
+	
 	set_position: function(x, y, z) {
-		this.mesh.position.set(x, y, z);
-		this.body.position.set(x, y, z);
+		if (this.mesh != undefined && this.body != undefined) {
+			this.mesh.position.set(x, y, z);
+			this.body.position.set(x, y, z);
+		}
 	},
 };

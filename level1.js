@@ -55,3 +55,16 @@ Cube.prototype.init = function(x, y, z, color, mass) {
 	this.body 		= new CANNON.RigidBody(mass, this.shape);
 	this.body.mesh = this.mesh; //save reference to 3D
 };
+
+
+
+function Rampa() {
+	Entity.call(this, "sikmina.js");
+};
+Rampa.prototype = Object.create(Entity.prototype);
+
+Rampa.prototype.init = function(color, mass) {
+	console.log(this.geometry);
+	this.material 	= new THREE.MeshLambertMaterial({color: color});
+	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
+};
