@@ -57,6 +57,10 @@ Engine.prototype = {
 	},
 };
 
+
+/*
+	Scenemanager cares about creation graphic scene and physics world, then load entities and care about lists of static entities and moving entities
+*/
 function SceneManager() {}; //constructor
 
 SceneManager.prototype = {
@@ -107,11 +111,13 @@ SceneManager.prototype = {
 		this.movableEntities.push(cube3);
 	
 		var sikma = new Rampa();
+		sikma.load("sikmina.js");
 		sikma.init(0xAB1212, 0);
 		sikma.mesh.position.set(0,1,0);
 		sikma.mesh.rotation.y = -Math.PI/2;
 		sikma.add(this.scene, this.world);
 		this.entities.push(sikma);
+		
 	
 		
 		//light
@@ -126,15 +132,20 @@ SceneManager.prototype = {
 };
 
 function Entity(file) {
-	if (file == undefined) return;
+/*	if (file == undefined) return;
 		
 	var loader = new THREE.JSONLoader();
 	loader.load(file, function(geometry) {	
 			global_geometry = geometry;
 		});
 				
-	while(global_geometry == undefined) { sleep2(1000); }
-	this.geometry = global_geometry;
+	document.body.appendChild(loader.addStatusElement());
+	
+	while(global_geometry == undefined) { 
+		//sleep2(1000);
+	}
+	
+	this.geometry = global_geometry;*/
 };
 
 Entity.prototype = {
@@ -148,10 +159,19 @@ Entity.prototype = {
 	
 	init : function() {},
 	
-	add : function(scene, world) {
-		if (this.mesh != undefined)
+	load: function( url ) {
+		var loader = new JSONLoader()
+		loader.load( url, function(geometry, material) {
+				global_geometry = geometry;
+			});
+		this.geometry = global_geometry;
+//		console.log("Geometria v load(): ", this.geometry);
+	},
+	
+	add : function( scene, world ) {
+		if ( this.mesh != undefined )
 			scene.add(this.mesh);
-		if (this.body != undefined)
+		if ( this.body != undefined )
 			world.add(this.body);
 	},
 	
@@ -166,3 +186,25 @@ Entity.prototype = {
 		}
 	},
 };
+
+/*
+	Class inherited from THREE.JSONLoader, difference is in synchronicity of this class
+*//*
+function JSONLoader( showStatus ) {
+	THREE.JSONLoader.call(this, showStatus);
+};
+
+JSONLoader.prototype = Object.create(THREE.JSONLoader.prototype);
+
+JSONLoader.prototype.loadAjaxJSON = function ( context, url, callback, texturePath, callbackProgress ) {
+	//TODO presunúť import jQuery sem..
+	var data = $.ajax({ url: url, async: false, dataType: 'json' }).responseText;
+	if (data) {
+		var json = JSON.parse(data);
+		var result = context.parse( json, texturePath );
+		callback( result.geometry, result.materials );
+	} else {
+		console.warn( "THREE.JSONLoader: [" + url + "] seems to be unreachable or file there is 	empty" );
+	}
+	context.onLoadComplete();
+};*/

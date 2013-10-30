@@ -58,13 +58,33 @@ Cube.prototype.init = function(x, y, z, color, mass) {
 
 
 
-function Rampa() {
-	Entity.call(this, "sikmina.js");
-};
+function Rampa() { /*Entity.call(this, "sikmina.js"); */ };
 Rampa.prototype = Object.create(Entity.prototype);
 
 Rampa.prototype.init = function(color, mass) {
-	console.log(this.geometry);
 	this.material 	= new THREE.MeshLambertMaterial({color: color});
 	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
+};
+
+
+/*
+	Class inherited from THREE.JSONLoader, difference is in synchronicity of this class
+*/
+function JSONLoader( showStatus ) {
+	THREE.JSONLoader.call(this, showStatus);
+};
+
+JSONLoader.prototype = Object.create(THREE.JSONLoader.prototype);
+
+JSONLoader.prototype.loadAjaxJSON = function ( context, url, callback, texturePath, callbackProgress ) {
+	//TODO presunúť import jQuery sem..
+	var data = $.ajax({ url: url, async: false, dataType: 'json' }).responseText;
+	if (data) {
+		var json = JSON.parse(data);
+		var result = context.parse( json, texturePath );
+		callback( result.geometry, result.materials );
+	} else {
+		console.warn( "THREE.JSONLoader: [" + url + "] seems to be unreachable or file there is 	empty" );
+	}
+	context.onLoadComplete();
 };
