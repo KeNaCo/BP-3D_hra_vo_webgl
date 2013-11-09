@@ -110,15 +110,27 @@ SceneManager.prototype = {
 		this.entities.push(cube3);
 		this.movableEntities.push(cube3);
 	
-		var sikma = new Rampa();
-		sikma.load("sikmina.js");
+	var sikma = new Rampa();
+		sikma.load("rampa.js");
 		sikma.init(0xAB1212, 0);
 		sikma.mesh.position.set(0,1,0);
 		sikma.mesh.rotation.y = -Math.PI/2;
+		sikma.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,1), Math.PI);
+		
+		sikma.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0), -Math.PI/2);
+		sikma.body.position.set(0, 0.5, 0);
 		sikma.add(this.scene, this.world);
 		this.entities.push(sikma);
 		
-	
+/*		var zliab = new Entity();
+		zliab.load("zliab.js");
+		zliab.material 	= new THREE.MeshLambertMaterial({color: 0xAB1213});
+		zliab.mesh 		= new THREE.Mesh(zliab.geometry, zliab.material);
+		zliab.shape = physics_loader("zliab.js");
+		zliab.body = new CANNON.RigidBody(0, zliab.shape);
+		zliab.body.mesh = zliab.mesh;
+		zliab.set_position(-2,1,5);
+*/	
 		
 		//light
 		var light = new THREE.PointLight(0xF8D898);
@@ -131,22 +143,7 @@ SceneManager.prototype = {
 	},
 };
 
-function Entity(file) {
-/*	if (file == undefined) return;
-		
-	var loader = new THREE.JSONLoader();
-	loader.load(file, function(geometry) {	
-			global_geometry = geometry;
-		});
-				
-	document.body.appendChild(loader.addStatusElement());
-	
-	while(global_geometry == undefined) { 
-		//sleep2(1000);
-	}
-	
-	this.geometry = global_geometry;*/
-};
+function Entity() {};
 
 Entity.prototype = {
 	//graphics
@@ -206,5 +203,116 @@ JSONLoader.prototype.loadAjaxJSON = function ( context, url, callback, texturePa
 	} else {
 		console.warn( "THREE.JSONLoader: [" + url + "] seems to be unreachable or file there is 	empty" );
 	}
-	context.onLoadComplete();
+	context.onLoadComplete();this.body.position.set(x, y, z);
 };*/
+
+//TODO POZOR!!! Duplicita kodu pri načítavaní zo súboru..
+function physics_loader(url) {
+	var data = $.ajax({ url: url, async: false, dataType: 'json' }).responseText;
+	var json;
+	if (data) {
+		json = JSON.parse(data);
+	} else {
+		console.warn( "physics_loader: [" + url + "] seems to be unreachable or file there is 	empty" );
+	}
+	
+	function isBitSet( value, position ) {
+		return value & ( 1 << position );
+	}
+	
+	var scale = ( json.scale !== undefined ) ? 1.0 / json.scale : 1.0;
+//	var scale = 2.0;
+	//uv
+	
+	var j, offset = 0, vertices = [], faces = [],
+	type,
+	isQuad,
+	hasMaterial,
+	hasFaceVertexUv,
+	hasFaceNormal, hasFaceVertexNormal,
+	hasFaceColor, hasFaceVertexColor;
+	
+	while ( offset < json.vertices.length ) {
+		vertex = new CANNON.Vec3();
+		vertex.x = json.vertices[ offset ++ ] * scale ;
+		vertex.y = json.vertices[ offset ++ ] * scale ; //*2;
+		vertex.z = json.vertices[ offset ++ ] * scale ;
+		
+		if ( vertex.z < 0 ) vertex.z *= 2.5;
+		
+		vertices.push(vertex);
+	}
+	
+	offset = 0;
+	
+	while ( offset < json.faces.length ) {
+		type = json.faces[ offset ++ ];
+
+		isQuad              = isBitSet( type, 0 );
+		hasMaterial         = isBitSet( type, 1 );
+		hasFaceVertexUv     = isBitSet( type, 3 );
+		hasFaceNormal       = isBitSet( type, 4 );
+		hasFaceVertexNormal = isBitSet( type, 5 );
+		hasFaceColor	    = isBitSet( type, 6 );
+		hasFaceVertexColor  = isBitSet( type, 7 );
+		
+		console.log("type", type, "bits", isQuad, hasMaterial, hasFaceVertexUv, hasFaceNormal, hasFaceVertexNormal, hasFaceColor, hasFaceVertexColor);
+		
+		if ( isQuad ) {
+			var v1 = json.faces[offset ++];
+			var v2 = json.faces[offset ++];
+			var v3 = json.faces[offset ++];
+			var v4 = json.faces[offset ++];
+			
+			console.log("Verts: ", v1, " ", v2," ", v3," ", v4);
+			
+			faces.push([v1, v2, v3, v4]);
+			
+			if ( hasMaterial ) { offset ++ }
+			
+			//fi = geometry.faces.length;
+			
+			if ( hasFaceVertexUv ) {
+				for ( j=0; j < 4; j++ ) offset ++;
+			}
+			
+			if ( hasFaceNormal ) { offset ++ }
+			
+			if ( hasFaceVertexNormal ) {
+				for ( j=0; j < 4; j++ ) offset ++;
+			}
+			
+			if ( hasFaceColor ) { offset ++ }
+			
+			if ( hasFaceVertexColor ) {
+				for ( j=0; j < 4; j++ ) offset ++;
+			}
+			
+		} else {
+			var v1 = json.faces[offset ++];
+			var v2 = json.faces[offset ++];
+			var v3 = json.faces[offset ++];
+			
+			faces.push([v1, v2, v3]);
+			
+			console.log("Verts: ", v1, " ", v2," ", v3," ", v4);
+			
+			if ( hasMaterial ) { offset ++ }
+			//fi = geometry.faces.length;
+			if ( hasFaceVertexUv ) {
+				for ( j=0; j < 3; j++ ) offset ++;
+			}
+			if ( hasFaceNormal ) { offset ++ }
+			if ( hasFaceVertexNormal ) {
+				for ( j=0; j < 3; j++ ) offset ++;
+			}
+			if ( hasFaceColor ) { offset ++ }
+			if ( hasFaceVertexColor ) {
+				for ( j=0; j < 3; j++ ) offset ++;
+			}
+		}
+	}
+	
+	var boxShape = new CANNON.ConvexPolyhedron(vertices, faces);
+	return boxShape;
+};

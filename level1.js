@@ -64,7 +64,18 @@ Rampa.prototype = Object.create(Entity.prototype);
 Rampa.prototype.init = function(color, mass) {
 	this.material 	= new THREE.MeshLambertMaterial({color: color});
 	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
+	
+	this.shape = physics_loader("rampa.js");
+	this.body = new CANNON.RigidBody(0, this.shape);
+	this.body.mesh = this.mesh;
 };
+
+
+
+
+
+
+
 
 
 /*
