@@ -111,14 +111,14 @@ SceneManager.prototype = {
 		this.movableEntities.push(cube3);
 	
 	var sikma = new Rampa();
-		sikma.load("rampa.js");
+		sikma.load("rampa3.js");
 		sikma.init(0xAB1212, 0);
 		sikma.mesh.position.set(0,1,0);
-		sikma.mesh.rotation.y = -Math.PI/2;
-		sikma.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,1), Math.PI);
+//		sikma.mesh.rotation.y = -Math.PI/2;
+//		sikma.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,1), Math.PI);
 		
-		sikma.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0), -Math.PI/2);
-		sikma.body.position.set(0, 0.5, 0);
+//		sikma.body.quaternion.setFromAxisAngle(new CANNON.Vec3(0,1,0), -Math.PI/2);
+		sikma.body.position.y += 1;
 		sikma.add(this.scene, this.world);
 		this.entities.push(sikma);
 		
@@ -259,14 +259,16 @@ function physics_loader(url) {
 		console.log("type", type, "bits", isQuad, hasMaterial, hasFaceVertexUv, hasFaceNormal, hasFaceVertexNormal, hasFaceColor, hasFaceVertexColor);
 		
 		if ( isQuad ) {
+			var v = json.faces[offset ++];
 			var v1 = json.faces[offset ++];
 			var v2 = json.faces[offset ++];
 			var v3 = json.faces[offset ++];
-			var v4 = json.faces[offset ++];
 			
-			console.log("Verts: ", v1, " ", v2," ", v3," ", v4);
+			console.log("Face1: ", v, v1, v3);
+			console.log("Face2: ", v1, v2, v3);
 			
-			faces.push([v1, v2, v3, v4]);
+			faces.push([v, v1, v3]);
+			faces.push([v1, v2, v3]);
 			
 			if ( hasMaterial ) { offset ++ }
 			
@@ -289,13 +291,13 @@ function physics_loader(url) {
 			}
 			
 		} else {
+			var v = json.faces[offset ++];
 			var v1 = json.faces[offset ++];
 			var v2 = json.faces[offset ++];
-			var v3 = json.faces[offset ++];
 			
 			faces.push([v1, v2, v3]);
 			
-			console.log("Verts: ", v1, " ", v2," ", v3," ", v4);
+			console.log("Face: ", v, v1, v2);
 			
 			if ( hasMaterial ) { offset ++ }
 			//fi = geometry.faces.length;
