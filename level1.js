@@ -65,9 +65,8 @@ Rampa.prototype.init = function(color, mass) {
 	this.material 	= new THREE.MeshLambertMaterial({color: color});
 	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
 	
-	this.shape = physics_loader("rampa3.js");
-	this.body = new CANNON.RigidBody(0, this.shape);
-	this.body.mesh = this.mesh;
+	this.body = new CANNON.RigidBody(mass, this.shape);
+	this.body.mesh = this.mesh; //save reference to 3D
 };
 
 
@@ -91,7 +90,7 @@ JSONLoader.prototype.loadAjaxJSON = function ( context, url, callback, texturePa
 	//TODO presunúť import jQuery sem..
 	var data = $.ajax({ url: url, async: false, dataType: 'json' }).responseText;
 	if (data) {
-		var json = JSON.parse(data);
+		var json = global_json = JSON.parse(data);
 		var result = context.parse( json, texturePath );
 		callback( result.geometry, result.materials );
 	} else {
