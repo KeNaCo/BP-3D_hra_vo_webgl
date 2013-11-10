@@ -70,7 +70,16 @@ Rampa.prototype.init = function(color, mass) {
 };
 
 
+function Zliab() {};
+Zliab.prototype = Object.create(Entity.prototype);
 
+Zliab.prototype.init = function(color, mass) {
+	this.material 	= new THREE.MeshLambertMaterial({color: color});
+	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
+	
+	this.body = new CANNON.RigidBody(mass, this.shape);
+	this.body.mesh = this.mesh; //save reference to 3D
+}
 
 
 

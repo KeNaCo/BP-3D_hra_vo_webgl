@@ -111,7 +111,7 @@ SceneManager.prototype = {
 		this.entities.push(cube3);
 		this.movableEntities.push(cube3);
 	
-	var sikma = new Rampa();
+		var sikma = new Rampa();
 		sikma.load("rampa3.js");
 		sikma.init(0xAB1212, 0);
 
@@ -121,15 +121,20 @@ SceneManager.prototype = {
 		sikma.add(this.scene, this.world);
 		this.entities.push(sikma);
 		
-/*		var zliab = new Entity();
+		var zliab = new Zliab();
 		zliab.load("zliab.js");
-		zliab.material 	= new THREE.MeshLambertMaterial({color: 0xAB1213});
-		zliab.mesh 		= new THREE.Mesh(zliab.geometry, zliab.material);
-		zliab.shape = physics_loader("zliab.js");
-		zliab.body = new CANNON.RigidBody(0, zliab.shape);
-		zliab.body.mesh = zliab.mesh;
-		zliab.set_position(-2,1,5);
-*/	
+		zliab.init(0xAB1212, 0);
+		
+		
+		zliab.mesh.position.set(-3, 0, 3);
+		zliab.body.position.set(-3, 0, 3);
+//		zliab.mesh.position.y += 3; //TODO automatizovanie pozicovania
+//		zliab.body.position.y += 3;
+
+		zliab.add(this.scene, this.world);
+		this.entities.push(zliab);
+		
+	
 		
 		//light
 		var light = new THREE.PointLight(0xF8D898);
@@ -180,7 +185,7 @@ Entity.prototype = {
 			vertex.y = json.vertices[ offset ++ ] * scale ; //*2;
 			vertex.z = json.vertices[ offset ++ ] * scale ;
 		
-			if ( vertex.z < 0 ) vertex.z *= 2.5;
+			//if ( vertex.z < 0 ) vertex.z *= 2.5;
 			
 			vertices.push(vertex);
 		}
@@ -198,7 +203,7 @@ Entity.prototype = {
 			hasFaceColor	    = isBitSet( type, 6 );
 			hasFaceVertexColor  = isBitSet( type, 7 );
 		
-			console.log("type", type, "bits", isQuad, hasMaterial, hasFaceVertexUv, hasFaceNormal, hasFaceVertexNormal, hasFaceColor, hasFaceVertexColor);
+//			console.log("type", type, "bits", isQuad, hasMaterial, hasFaceVertexUv, hasFaceNormal, hasFaceVertexNormal, hasFaceColor, hasFaceVertexColor);
 		
 			if ( isQuad ) {
 				var v = json.faces[offset ++];
@@ -206,8 +211,8 @@ Entity.prototype = {
 				var v2 = json.faces[offset ++];
 				var v3 = json.faces[offset ++];
 			
-				console.log("Face1: ", v, v1, v3);
-				console.log("Face2: ", v1, v2, v3);
+//				console.log("Face1: ", v, v1, v3);
+//				console.log("Face2: ", v1, v2, v3);
 			
 				faces.push([v, v1, v3]);
 				faces.push([v1, v2, v3]);
@@ -239,7 +244,7 @@ Entity.prototype = {
 			
 				faces.push([v1, v2, v3]);
 			
-				console.log("Face: ", v, v1, v2);
+//				console.log("Face: ", v, v1, v2);
 			
 				if ( hasMaterial ) { offset ++ }
 				//fi = geometry.faces.length;
