@@ -65,6 +65,8 @@ Engine.prototype = {
 				this.camera.position.x = entitie.mesh.position.x;
 				this.camera.position.z = entitie.mesh.position.z +3;
 			}
+			
+			if ( entitie.mesh.position.y < -100 ) { entitie.fall(); }
 		}
 	},
 };
@@ -107,7 +109,20 @@ SceneManager.prototype = {
 		ball.add(this.scene, this.world);
 		this.entities.push(ball);
 		this.movableEntities.push(ball);
-			
+
+/*		var ball = new Ball2();
+		ball.load("ball.js");
+		ball.init(0xAB1212, 10);
+		
+		ball.mesh.position.set(0, 3, 0);
+		ball.body.position.set(0, 3, 0);
+//		zliab.mesh.position.y += 3; //TODO automatizovanie pozicovania
+//		zliab.body.position.y += 3;
+
+		ball.add(this.scene, this.world);
+		this.entities.push(ball);
+		this.movableEntities.push(ball);
+*/					
 		//static cube
 		var cube = new Cube();
 		cube.init(1, 1, 1, 0x55B665, 0);
@@ -133,7 +148,7 @@ SceneManager.prototype = {
 		this.entities.push(sikma);
 		
 		var zliab = new Zliab();
-		zliab.load("zliab.js");
+		zliab.load("zliab3.js");
 		zliab.init(0xAB1212, 0);
 		
 		
@@ -304,6 +319,8 @@ Entity.prototype = {
 			this.body.position.set(x, y, z);
 		}
 	},
+	
+	fall : function() {},
 };
 
 /*
