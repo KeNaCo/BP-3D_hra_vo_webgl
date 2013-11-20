@@ -25,8 +25,10 @@ Engine.prototype = {
 		this.mSceneManager.init();
 	
 		this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-		this.camera.position.z = 8;
-		this.camera.position.y = 2;
+		this.camera.position.z = 5;
+		this.camera.position.y = 3;		
+		//set the look on ball
+		this.camera.lookAt(new THREE.Vector3(0,0,0));
 	
 		this.mRenderer = new THREE.WebGLRenderer(); 
 		this.mRenderer.setSize(window.innerWidth, window.innerHeight); 
@@ -54,6 +56,15 @@ Engine.prototype = {
 			entitie.body.position.copy(entitie.body.mesh.position);
 			entitie.body.quaternion.copy(entitie.body.mesh.quaternion);
 			entitie.move();
+			
+			if (i == 0) {
+//				camTarget = entitie.mesh.position;
+				//rotation on target
+//				this.camera.lookAt( camTarget );
+				//simple movement of camera with object
+				this.camera.position.x = entitie.mesh.position.x;
+				this.camera.position.z = entitie.mesh.position.z +3;
+			}
 		}
 	},
 };
