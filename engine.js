@@ -148,7 +148,7 @@ SceneManager.prototype = {
 		this.entities.push(sikma);
 		
 		var zliab = new Zliab();
-		zliab.load("zliab3.js");
+		zliab.load("zliab.js");
 		zliab.init(0xAB1212, 0);
 		
 		
@@ -314,7 +314,7 @@ Entity.prototype = {
 	animate: function() {}, //function for animated objects
 	
 	set_position: function(x, y, z) {
-		if (this.mesh != undefined && this.body != undefined) {
+		if (this.mesh != undefined && this.body != undefined) {
 			this.mesh.position.set(x, y, z);
 			this.body.position.set(x, y, z);
 		}
