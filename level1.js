@@ -70,8 +70,8 @@ Ball.prototype.move = function() {
 
 	this.body.angularVelocity.y = 0; //stop the y axis rotation
 	
-	if ((this.body.angularVelocity.z < 0.15) && 	(this.body.angularVelocity.z > -0.15)) this.body.angularVelocity.z = 0;
-	if ((this.body.angularVelocity.x < 0.15) && 	(this.body.angularVelocity.x > -0.15)) this.body.angularVelocity.x = 0;
+	if ((this.body.angularVelocity.z < 0.25) && 	(this.body.angularVelocity.z > -0.25)) this.body.angularVelocity.z = 0;
+	if ((this.body.angularVelocity.x < 0.25) && 	(this.body.angularVelocity.x > -0.25)) this.body.angularVelocity.x = 0;
 //	console.log("Velocity: [", this.body.angularVelocity.x, ",", this.body.angularVelocity.z, "]");
 };
 
@@ -105,6 +105,16 @@ Rampa.prototype.init = function(color, mass) {
 	this.body.mesh = this.mesh; //save reference to 3D
 };
 
+function Chodnik() {};
+Chodnik.prototype = Object.create(Entity.prototype);
+
+Chodnik.prototype.init = function(mass) {
+	this.material 	= new THREE.MeshLambertMaterial({color: 0x55B665});
+	this.mesh = new THREE.Mesh(this.geometry, this.material);
+	
+	this.body = new CANNON.RigidBody(mass, this.shape);
+	this.body.mesh = this.mesh; //save reference to 3D
+}
 
 function Zliab() {};
 Zliab.prototype = Object.create(Entity.prototype);

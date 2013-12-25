@@ -1,4 +1,5 @@
 var global_geometry = undefined;
+var global_material = undefined;
 var global_json = undefined;
 
 function sleep(milliseconds) {
@@ -138,7 +139,7 @@ SceneManager.prototype = {
 		this.movableEntities.push(cube3);
 	
 		var sikma = new Rampa();
-		sikma.load("rampa3.js");
+		sikma.load("models/rampa3.js");
 		sikma.init(0xAB1212, 0);
 
 		sikma.mesh.position.y += 1; //TODO automatizovanie pozicovania
@@ -148,7 +149,7 @@ SceneManager.prototype = {
 		this.entities.push(sikma);
 		
 		var zliab = new Zliab();
-		zliab.load("zliab.js");
+		zliab.load("models/zliab.js");
 		zliab.init(0xAB1212, 0);
 		
 		
@@ -160,6 +161,15 @@ SceneManager.prototype = {
 		zliab.add(this.scene, this.world);
 		this.entities.push(zliab);
 		
+		
+		var chodnik = new Chodnik();
+		chodnik.load("models/tex.js");
+		chodnik.init(0);
+		chodnik.mesh.position.set(-9, -0.5, 0);
+		chodnik.body.position.set(-9, -0.5, 0);
+		
+		chodnik.add(this.scene, this.world);
+		this.entities.push(chodnik);
 	
 		
 		//light
@@ -295,8 +305,10 @@ Entity.prototype = {
 		var loader = new JSONLoader()
 		loader.load( url, function(geometry, material) {
 				global_geometry = geometry;
+				global_material = material;
 			});
 		this.geometry = global_geometry;
+		this.material = global_material;
 //		console.log("Geometria v load(): ", this.geometry);
 		
 		this.load_physics();
