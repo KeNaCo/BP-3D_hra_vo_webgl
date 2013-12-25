@@ -64,6 +64,7 @@ Engine.prototype = {
 //				this.camera.lookAt( camTarget );
 				//simple movement of camera with object
 				this.camera.position.x = entitie.mesh.position.x;
+				this.camera.position.y = entitie.mesh.position.y +3;
 				this.camera.position.z = entitie.mesh.position.z +3;
 			}
 			
@@ -110,7 +111,7 @@ SceneManager.prototype = {
 	},
 	
 	//metoda registruje Entitu do SceneManageru, ktorý ju vloží do scény a sveta
-	register: function(entity, bScene, bWorld, bMovable) {
+	register: function(entity, bScene=true, bWorld=true, bMovable=true) {
 		console.log("Register entity scene:", bScene, " world:", bWorld, " movable:", bMovable);
 		if ( bScene ) this.scene.add(entity.mesh);
 		if ( bWorld ) this.world.add(entity.body);

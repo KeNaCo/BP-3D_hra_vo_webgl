@@ -15,6 +15,21 @@ block2 = new Entity();
 block2.init("models/1_5x3.js", stoneMaterial, 0);
 block2.set_position(-3.75,0,-2.75);
 mSceneManager.register(block2, true, true, true);
+
+block3 = new Entity();
+block3.init("models/1_5x1_5.js", stoneMaterial, 0);
+block3.set_position(-5.25,2,-2.75);
+mSceneManager.register(block3);
+
+block4 = new Entity();
+block4.init("models/0_5x5.js", stoneMaterial, 0);
+block4.set_position(-4.5,2,-3.5);
+mSceneManager.register(block4);
+
+block5 = new Entity;
+block5.init("models/1_5x1_5.js", stoneMaterial, 0);
+block5.set_position(-5.25,2,-9.25);
+mSceneManager.register(block5);
 };
 
 
