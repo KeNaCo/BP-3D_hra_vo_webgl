@@ -56,7 +56,7 @@ Engine.prototype = {
 			var entitie = this.mSceneManager.movableEntities[i];
 			entitie.body.position.copy(entitie.body.mesh.position);
 			entitie.body.quaternion.copy(entitie.body.mesh.quaternion);
-			entitie.move();
+			entitie.update();
 			
 			if (i == 0) {
 //				camTarget = entitie.mesh.position;
@@ -67,7 +67,7 @@ Engine.prototype = {
 				this.camera.position.z = entitie.mesh.position.z +3;
 			}
 			
-			if ( entitie.mesh.position.y < -100 ) { entitie.fall(); }
+			if ( entitie.mesh.position.y < -10 ) { entitie.reset(0,1,0); }
 		}
 	},
 };
@@ -97,89 +97,24 @@ SceneManager.prototype = {
 		this.world.broadphase = new CANNON.NaiveBroadphase();
 		this.world.solver.iterations = 10; // Use 10 iterations each time the simulation is run
 		
-		//creation of plane floor
-		var floor = new Floor();
-		floor.init(10,10, 0x863bb2, 0);
-		this.entities.push(floor);
-		floor.add(this.scene, this.world);
-	
-		//ball
-		var ball = new Ball();
-		ball.init(0.5, 0x55B663, 10);
-		ball.set_position(0, 3, 0);
-		ball.add(this.scene, this.world);
-		this.entities.push(ball);
-		this.movableEntities.push(ball);
 
-/*		var ball = new Ball2();
-		ball.load("ball.js");
-		ball.init(0xAB1212, 10);
-		
-		ball.mesh.position.set(0, 3, 0);
-		ball.body.position.set(0, 3, 0);
-//		zliab.mesh.position.y += 3; //TODO automatizovanie pozicovania
-//		zliab.body.position.y += 3;
-
-		ball.add(this.scene, this.world);
-		this.entities.push(ball);
-		this.movableEntities.push(ball);
-*/					
-		//static cube
-		var cube = new Cube();
-		cube.init(1, 1, 1, 0x55B665, 0);
-		cube.set_position(2,0.5,1);
-		cube.add(this.scene, this.world);
-		this.entities.push(cube);
-		
-		var cube3 = new Cube();
-		cube3.init(0.5, 0.5, 0.5, 0xAB12CD, 1);
-		cube3.set_position(-1,1,3);
-		cube3.add(this.scene, this.world);
-		this.entities.push(cube3);
-		this.movableEntities.push(cube3);
-	
-		var sikma = new Rampa();
-		sikma.load("models/rampa3.js");
-		sikma.init(0xAB1212, 0);
-
-		sikma.mesh.position.y += 1; //TODO automatizovanie pozicovania
-		sikma.body.position.y += 1;
-
-		sikma.add(this.scene, this.world);
-		this.entities.push(sikma);
-		
-		var zliab = new Zliab();
-		zliab.load("models/zliab.js");
-		zliab.init(0xAB1212, 0);
-		
-		
-		zliab.mesh.position.set(-3, 0, 3);
-		zliab.body.position.set(-3, 0, 3);
-//		zliab.mesh.position.y += 3; //TODO automatizovanie pozicovania
-//		zliab.body.position.y += 3;
-
-		zliab.add(this.scene, this.world);
-		this.entities.push(zliab);
-		
-		
-		var chodnik = new Chodnik();
-		chodnik.load("models/tex.js");
-		chodnik.init(0);
-		chodnik.mesh.position.set(-9, -0.5, 0);
-		chodnik.body.position.set(-9, -0.5, 0);
-		
-		chodnik.add(this.scene, this.world);
-		this.entities.push(chodnik);
-	
 		
 		//light
 		var light = new THREE.PointLight(0xF8D898);
 		// set its position
-		light.position.x = 0;
-		light.position.y = 5;
-		light.position.z = 0;
+		light.position.x = 2;
+		light.position.y = 4;
+		light.position.z = 6;
 		// add to the scene
 		this.scene.add(light);
+	},
+	
+	//metoda registruje Entitu do SceneManageru, ktorý ju vloží do scény a sveta
+	register: function(entity, bScene, bWorld, bMovable) {
+		console.log("Register entity scene:", bScene, " world:", bWorld, " movable:", bMovable);
+		if ( bScene ) this.scene.add(entity.mesh);
+		if ( bWorld ) this.world.add(entity.body);
+		if ( bMovable ) this.movableEntities.push(entity);
 	},
 };
 
@@ -194,7 +129,15 @@ Entity.prototype = {
 	shape : undefined,
 	body : undefined,
 	
-	init : function() {},
+	init : function(url, material, mass) {
+	//TODO odstrániť if
+		if ( url ) this.load(url);
+		if ( material ) this.material = material;
+		this.mesh 		= new THREE.Mesh(this.geometry, this.material);
+		
+		this.body = new CANNON.RigidBody(mass, this.shape);
+		this.body.mesh = this.mesh; //save reference to 3D
+	},
 	
 	load_physics: function() {
 		var json = global_json;
@@ -221,7 +164,6 @@ Entity.prototype = {
 			vertex.y = json.vertices[ offset ++ ] * scale ; //*2;
 			vertex.z = json.vertices[ offset ++ ] * scale ;
 		
-			//if ( vertex.z < 0 ) vertex.z *= 2.5;
 			
 			vertices.push(vertex);
 		}
@@ -321,7 +263,7 @@ Entity.prototype = {
 			world.add(this.body);
 	},
 	
-	move : function() {}, //function for moving objects
+	update : function() {}, //function for moving objects
 	
 	animate: function() {}, //function for animated objects
 	
@@ -332,7 +274,7 @@ Entity.prototype = {
 		}
 	},
 	
-	fall : function() {},
+	reset : function() {},
 };
 
 /*

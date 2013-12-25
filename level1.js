@@ -1,17 +1,24 @@
-function Floor() {};
-Floor.prototype = Object.create(Entity.prototype);
+function level1(mSceneManager) {
+stoneMaterial = new THREE.MeshLambertMaterial(0xa2a3a4);
 
-Floor.prototype.init = function(x, y, color, mass) {
-	this.geometry 	= new THREE.PlaneGeometry(x, y);
-	this.material 	= new THREE.MeshLambertMaterial({color: color});
-	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
-	this.shape 		= new CANNON.Box(new CANNON.Vec3(x/2,0.01,y/2)); // 5 is half of plane geometry
-	this.body 		= new CANNON.RigidBody(mass, this.shape); // mass of "0" indicates static object
-	this.body.mesh = this.mesh; //save reference to 3D mesh
-	
-	this.mesh.rotation.x = -Math.PI/2;
-//	this.body.quaternion.setFromAxisAngle(new CANNON.Vec3(1,0,0),-Math.PI/2);
+ball = new Ball();
+ball.init(0.5, 0x55B663, 10);
+ball.set_position(0,0.5,0);
+mSceneManager.register(ball, true, true, true);
+
+block1 = new Entity();
+block1.init("models/1_5x4.js", stoneMaterial, 0);
+block1.set_position(0,0,-1.5);
+mSceneManager.register(block1, true, true, true);
+
+block2 = new Entity();
+block2.init("models/1_5x3.js", stoneMaterial, 0);
+block2.set_position(-3.75,0,-2.75);
+mSceneManager.register(block2, true, true, true);
 };
+
+
+
 
 function Ball() {};
 Ball.prototype = Object.create(Entity.prototype);
@@ -31,22 +38,9 @@ Ball.prototype.init = function(r, color, mass) {
 */
 };
 
-Ball.prototype.move = function() {
-/*	function get_acceleration(value, maxValue, raise = false) {
-		var ret, neg=false;
-		if (value < 0) {
-			value = -value;
-			neg = true;
-		}
-		
-		if (raise) ret = (value == maxValue) ? maxValue : ++value;
-		else ret = (value == 0) ? 0 : --value;
-
-		if (neg) return -ret;
-		else return ret;
-	}*/
-	MAXV = 6;
-	ACC = 0.7;
+Ball.prototype.update = function() {
+	var MAXV = 6;
+	var ACC = 1;
 	
 	if (Key.isDown(Key.A))
 		this.body.angularVelocity.z = (this.body.angularVelocity.z == MAXV) ? MAXV : this.body.angularVelocity.z + ACC;
@@ -75,87 +69,11 @@ Ball.prototype.move = function() {
 //	console.log("Velocity: [", this.body.angularVelocity.x, ",", this.body.angularVelocity.z, "]");
 };
 
-Ball.prototype.fall = function() {
+Ball.prototype.reset = function(x, y, z) {
 //	this.body.angularVelocity.set(0,0,0);
-	this.set_position(0, 3, 0);
+	this.set_position(x, y, z);
 	}
 
-function Cube() {};
-Cube.prototype = Object.create(Entity.prototype);
-
-Cube.prototype.init = function(x, y, z, color, mass) {
-	this.geometry 	= new THREE.CubeGeometry(x,y,z);
-	this.materal 	= new THREE.MeshLambertMaterial({color: color});
-	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
-	this.shape 		= new CANNON.Box(new CANNON.Vec3(x/2,y/2,z/2));
-	this.body 		= new CANNON.RigidBody(mass, this.shape);
-	this.body.mesh = this.mesh; //save reference to 3D
-};
-
-
-
-function Rampa() { /*Entity.call(this, "sikmina.js"); */ };
-Rampa.prototype = Object.create(Entity.prototype);
-
-Rampa.prototype.init = function(color, mass) {
-	this.material 	= new THREE.MeshLambertMaterial({color: color});
-	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
-	
-	this.body = new CANNON.RigidBody(mass, this.shape);
-	this.body.mesh = this.mesh; //save reference to 3D
-};
-
-function Chodnik() {};
-Chodnik.prototype = Object.create(Entity.prototype);
-
-Chodnik.prototype.init = function(mass) {
-	this.material 	= new THREE.MeshLambertMaterial({color: 0x55B665});
-	this.mesh = new THREE.Mesh(this.geometry, this.material);
-	
-	this.body = new CANNON.RigidBody(mass, this.shape);
-	this.body.mesh = this.mesh; //save reference to 3D
-}
-
-function Zliab() {};
-Zliab.prototype = Object.create(Entity.prototype);
-
-Zliab.prototype.init = function(color, mass) {
-	this.material 	= new THREE.MeshLambertMaterial({color: color});
-	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
-	
-	this.body = new CANNON.RigidBody(mass, this.shape);
-	this.body.mesh = this.mesh; //save reference to 3D
-}
-
-function Ball2() {};
-Ball2.prototype = Object.create(Entity.prototype);
-
-Ball2.prototype.init = function(color, mass) {
-	this.material 	= new THREE.MeshLambertMaterial({color: color});
-	this.mesh 		= new THREE.Mesh(this.geometry, this.material);
-	
-	this.body = new CANNON.RigidBody(mass, this.shape);
-	this.body.mesh = this.mesh; //save reference to 3D
-}
-
-Ball2.prototype.move = function() {
-	if (Key.isDown(Key.A))
-		this.body.angularVelocity.z = 2;
-	else
-		this.body.angularVelocity.z = 0;
-
-	if (Key.isDown(Key.D))
-		this.body.angularVelocity.z = -2;
-
-	if (Key.isDown(Key.W))
-		this.body.angularVelocity.x = -2;
-	else
-		this.body.angularVelocity.x = 0;
-
-	if (Key.isDown(Key.S))
-		this.body.angularVelocity.x = 2;
-	this.body.angularVelocity.y = 0; //stop the y axis rotation
-};
 
 
 /*
