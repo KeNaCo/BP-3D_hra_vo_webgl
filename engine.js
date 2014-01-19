@@ -1,7 +1,7 @@
 var global_geometry = undefined;
 var global_material = undefined;
 var global_json = undefined;
-
+/*
 function sleep(milliseconds) {
 	var start = new Date().getTime();
 	for (var i = 0; i < 1e7; i++) {
@@ -13,7 +13,7 @@ function sleep2(milliseconds) {
 	var start = new Date().getTime();
 	while (new Date().getTime() < start + milliseconds);
 };
-
+*/
 function Engine() {};
 
 Engine.prototype = {
@@ -31,8 +31,11 @@ Engine.prototype = {
 		//set the look on ball
 		this.camera.lookAt(new THREE.Vector3(0,0,0));
 	
-		this.mRenderer = new THREE.WebGLRenderer(); 
-		this.mRenderer.setSize(window.innerWidth, window.innerHeight); 
+		this.mRenderer = new THREE.WebGLRenderer({antialias: true}); 
+		this.mRenderer.setSize(window.innerWidth, window.innerHeight);
+		
+		this.mRenderer.shadowMapEnabled = true;
+		
 		document.body.appendChild(this.mRenderer.domElement);
 	},
 	
@@ -52,8 +55,8 @@ Engine.prototype = {
 		time_last_run = now; 
     	
     	this.mSceneManager.world.step( delta * 2 ); // double the speed of the simulation
-    	for (var i=0; i < this.mSceneManager.movableEntities.length; i++) {
-			var entitie = this.mSceneManager.movableEntities[i];
+    	for (var i=0; i < this.mSceneManager.updateE.length; i++) {
+			var entitie = this.mSceneManager.updateE[i];
 			entitie.body.position.copy(entitie.body.mesh.position);
 			entitie.body.quaternion.copy(entitie.body.mesh.quaternion);
 			entitie.update();
@@ -70,6 +73,11 @@ Engine.prototype = {
 			
 			if ( entitie.mesh.position.y < -10 ) { entitie.reset(0,1,0); }
 		}
+		
+		for (var i=0; i < this.mSceneManager.animateE.length; i++) {
+			var entitie = this.mSceneManager.animateE[i];
+			entitie.animate();
+		}
 	},
 };
 
@@ -83,14 +91,16 @@ SceneManager.prototype = {
 	scene : undefined,
 	world : undefined,
 	entities : undefined,
-	movableEntities: undefined,
+	updateE: undefined,
+	animateE: undefined,
 	cube : undefined,
 	ball : undefined,
 	
 	init: function()  {
 		this.scene = new THREE.Scene();
 		this.entities = new Array(),
-		this.movableEntities = new Array(),
+		this.updateE = new Array(),
+		this.animateE = new Array(),
 		
 		//init physics
 		this.world = new CANNON.World();
@@ -100,14 +110,16 @@ SceneManager.prototype = {
 		
 
 		
-		//light
-		var light = new THREE.PointLight(0xF8D898);
+/*		//light
+//		var light = new THREE.PointLight(0xF8D898);
+		light = new THREE.DirectionalLight(0xFFFFFF, 1)
+		light.castShadow = true;
 		// set its position
-		light.position.x = 2;
-		light.position.y = 4;
-		light.position.z = 6;
+		light.position.x = 0;
+		light.position.y = 5;
+		light.position.z = 0;
 		// add to the scene
-		this.scene.add(light);
+		this.scene.add(light);*/
 	},
 	
 	//metoda registruje Entitu do SceneManageru, ktorý ju vloží do scény a sveta
@@ -115,7 +127,11 @@ SceneManager.prototype = {
 		console.log("Register entity scene:", bScene, " world:", bWorld, " movable:", bMovable);
 		if ( bScene ) this.scene.add(entity.mesh);
 		if ( bWorld ) this.world.add(entity.body);
-		if ( bMovable ) this.movableEntities.push(entity);
+		if ( bMovable ) this.updateE.push(entity);
+	},
+	
+	register_light: function(light) {
+		this.scene.add(light);
 	},
 };
 

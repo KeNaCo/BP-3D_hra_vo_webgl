@@ -3,12 +3,14 @@ stoneMaterial = new THREE.MeshLambertMaterial(0xa2a3a4);
 
 ball = new Ball();
 ball.init(0.5, 0x55B663, 10);
-ball.set_position(0,0.5,0);
+ball.set_position(0,0.76,0);
+ball.mesh.castShadow = true;
 mSceneManager.register(ball, true, true, true);
 
 block1 = new Entity();
 block1.init("models/1_5x4.js", stoneMaterial, 0);
 block1.set_position(0,0,-1.5);
+block1.mesh.receiveShadow = true;
 mSceneManager.register(block1, true, true, true);
 
 block2 = new Entity();
@@ -30,6 +32,30 @@ block5 = new Entity;
 block5.init("models/1_5x1_5.js", stoneMaterial, 0);
 block5.set_position(-5.25,2,-9.25);
 mSceneManager.register(block5);
+
+ambient = new THREE.AmbientLight( 0x404040 );
+mSceneManager.register_light(ambient);
+
+spot = new THREE.SpotLight()
+spot.shadowCameraNear = 1;
+spot.shadowCameraFar = 10;
+spot.shadowCameraVisible = true;
+spot.castShadow = true;
+spot.position.set(0,5,0);
+spot.animate = function() { this.target = ball.mesh; };
+mSceneManager.register_light(spot);
+mSceneManager.animateE.push(spot);
+
+spot1 = new THREE.SpotLight()
+spot1.shadowCameraNear = 1;
+spot1.shadowCameraFar = 10;
+spot1.shadowCameraVisible = true;
+spot1.castShadow = true;
+spot1.position.set(-7,4,-3);
+spot1.animate = function() { this.target = ball.mesh; };
+mSceneManager.register_light(spot1);
+mSceneManager.animateE.push(spot1);
+
 };
 
 
@@ -54,7 +80,7 @@ Ball.prototype.init = function(r, color, mass) {
 };
 
 Ball.prototype.update = function() {
-	var MAXV = 6;
+/*	var MAXV = 6;
 	var ACC = 1;
 	
 	if (Key.isDown(Key.A))
@@ -82,6 +108,15 @@ Ball.prototype.update = function() {
 	if ((this.body.angularVelocity.z < 0.25) && 	(this.body.angularVelocity.z > -0.25)) this.body.angularVelocity.z = 0;
 	if ((this.body.angularVelocity.x < 0.25) && 	(this.body.angularVelocity.x > -0.25)) this.body.angularVelocity.x = 0;
 //	console.log("Velocity: [", this.body.angularVelocity.x, ",", this.body.angularVelocity.z, "]");
+*/
+
+if (Key.isDown(Key.A)) this.body.angularVelocity.z = 2;
+else this.body.angularVelocity.z = 0;
+if (Key.isDown(Key.D)) this.body.angularVelocity.z = -2;
+if (Key.isDown(Key.W)) this.body.angularVelocity.x = -2;
+else this.body.angularVelocity.x = 0;
+if (Key.isDown(Key.S)) this.body.angularVelocity.x = 2;
+this.body.angularVelocity.y = 0;
 };
 
 Ball.prototype.reset = function(x, y, z) {
